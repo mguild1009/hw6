@@ -19,8 +19,28 @@ window.addEventListener('DOMContentLoaded', async function(event) {
     // ⬇️ ⬇️ ⬇️
     let URL = await fetch ("https://api.themoviedb.org/3/movie/550?api_key=a2719724cbe68b8b3fc7b6848ba4f72b")
     let json = await URL.json()
-    let movies = json.results
-    let db = firebase.firestore()
+    let movies = await URL.json()
+    console.log(movies)
+    for(let i=0; i<movies.length; i++) {
+    let movieID = movies[i].id 
+    let poster = movies[i].poster_path
+
+    document.querySelector('.movies').insertAdjacentHTML('beforeend', `<div class=".movies-${movieID} w-1/5 p-4">
+    <img src="https://image.tmdb.org/t/p/w500/${poster}" class="w-full">
+    <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">Watched</a>
+  </div>`)
+document.querySelector(`.watched-button`).addEventListener('click', async function(event){
+    event.preventDefault()
+    document.querySelector('.movies').classList.add('opacity-20')
+    console.log(`Movie ${movieID} was watched.`)
+}
+
+    let querySnapshot = await db.collection('watched').get()
+        let watched = querySnapshot.docs
+        for (let j=0; j < watched.length; j++){
+            let watched = watched[j].data()
+            watched.name
+        }
 
     // ⬆️ ⬆️ ⬆️ 
     // End Step 1
@@ -37,43 +57,10 @@ window.addEventListener('DOMContentLoaded', async function(event) {
     //   <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">I've watched this!</a>
     // </div>
     // ⬇️ ⬇️ ⬇️
-    fore (i=0; i<movies.length; i++) {
-        let movieID = movies[i].id
-        let movieName = movies[i].orignial_title
-        let querySnapshot = await db.collection ('watched').doc (`${movieID}`).get()
 
-        if(querySnapshot.data()){
-            docuemnt.querySelector(".movies").insertAdjacentHTML(`beforeend` , `
-            <div class="movie - ${movideID} w-1/5 p-4 opacity-20">
-            <h1 class= "font-bold text-xl text-white"> ${movieName} </h1>
-            <img src = ""https://image.tmbd.org/t/p/w500 ${movies[i].poster_path}" class="w-full">
-            <a href= "#" class = "watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded"> I've watched this!
-        </a>
-            
-            </div>
-            `)
-
-        } else {
-            document.querySelector(".movies").insertAdjacentHTML(`beforeend` , `
-            <div class="movie - ${movideID} w-1/5 p-4 opacity-20">
-            <h1 class= "font-bold text-xl text-white"> ${movieName} </h1>
-            <img src = ""https://image.tmbd.org/t/p/w500 ${movies[i].poster_path}" class="w-full">
-            <a href= "#" class = "watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded"> I've watched this!
-        </a>
-            
-            </div>
-            `)
-        } 
-        let watchButton = document.querySelector(`.movie-${movieID} .watched-button`)
-        
-        watchButton.addEventListener("click", async function(event) {
-            event.preventDefault()
-            document.querySelector(`.movie-${movieID}`).classList.add('opacity-20')
-            let docRef = await db.collection('watched').doc(`${movieID}`).set ({
-            })
         })
-    }
-
+        }
+    
     // ⬆️ ⬆️ ⬆️ 
     // End Step 2
   
@@ -109,4 +96,4 @@ window.addEventListener('DOMContentLoaded', async function(event) {
     //   database.
     // - Hint: you can use if (document) with no comparison
     //   operator to test for the existence of an object.
-  })
+})
